@@ -1,7 +1,7 @@
 ################################################################################################
 # Command alias for debugging messages
 # Usage:
-#   dmgs(<message>)
+#   dmsg(<message>)
 function(dmsg)
   message(STATUS ${ARGN})
 endfunction()
@@ -19,9 +19,9 @@ macro(caffe_list_unique)
 endmacro()
 
 ################################################################################################
-# Clears variables from lsit
+# Clears variables from list
 # Usage:
-#   caffe_list_unique(<variables_list>)
+#   caffe_clear_vars(<variables_list>)
 macro(caffe_clear_vars)
   foreach(_var ${ARGN})
     unset(${_var})
@@ -118,7 +118,7 @@ macro(caffe_parse_header FILENAME FILE_VAR)
         if(__add_cache)
           set(${name} ${${name}} CACHE INTERNAL "${name} parsed from ${FILENAME}" FORCE)
         elseif(__parnet_scope)
-          set(${name} "${${name}}" PARENT_SCOPE)          
+          set(${name} "${${name}}" PARENT_SCOPE)
         endif()
       else()
         unset(${name} CACHE)
@@ -297,13 +297,22 @@ function(caffe_get_current_cflags cflags_var)
   foreach(i ${current_includes})
     list(APPEND cflags "-I${i}")
   endforeach()
-
+  
+# append the following directory to include
+  list(APPEND cflags "-I/home/junjian/project/faster_rcnn/external/caffe/include;")
+  list(APPEND cflags "-I/opt/boost/boost_1_65/include;")
+  list(APPEND cflags "-I/usr/include/hdf5/serial;")
+  list(APPEND cflags "-I/usr/local/cuda/include;")
+  list(APPEND cflags "-I/usr/include/atlas;")
+  list(APPEND cflags "-I/usr/include/python2.7;")
+  list(APPEND cflags "-I/usr/local/lib/python2.7/dist-packages/numpy/core/include;")
+  list(APPEND cflags "-I/usr/local/matlab/toolbox/distcomp/gpu/extern/include;")
   caffe_list_unique(cflags)
   set(${cflags_var} ${cflags} PARENT_SCOPE)
 endfunction()
 
 ################################################################################################
-# Helper function to parse current linker libs into link directoris, libflags and osx frameworks
+# Helper function to parse current linker libs into link directories, libflags and osx frameworks
 # Usage:
 #   caffe_parse_linker_libs(<Caffe_LINKER_LIBS_var> <directories_var> <libflags_var> <frameworks_var>)
 function(caffe_parse_linker_libs Caffe_LINKER_LIBS_variable folders_var flags_var frameworks_var)
@@ -320,24 +329,28 @@ function(caffe_parse_linker_libs Caffe_LINKER_LIBS_variable folders_var flags_va
       set(__varname "__debug")
     elseif(list_elem STREQUAL "optimized")
       set(__varname "__optimized")
+    elseif(list_elem STREQUAL "PUBLIC")
+      set(__varname "__unspec")
+    elseif(list_elem STREQUAL "PRIVATE")
+      set(__varname "__unspec")      
     elseif(list_elem MATCHES "^-framework[ \t]+([^ \t].*)")
       list(APPEND __framework -framework ${CMAKE_MATCH_1})
     else()
-      list(APPEND ${__varname} ${list_elem})
+      list(APPEND __libs ${list_elem})
       set(__varname "__unspec")
     endif()
   endforeach()
 
   # attach debug or optimized libs to unspecified according to current configuration
-  if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(__libs ${__unspec} ${__debug})
-  else()
-    set(__libs ${__unspec} ${__optimized})
-  endif()
+  #if(CMAKE_BUILD_TYPE MATCHES "Debug")
+  #  set(__libs ${__unspec} ${__debug})
+  #else()
+  #  set(__libs ${__unspec} ${__optimized})
+  #endif()
 
   set(libflags "")
   set(folders "")
-
+  
   # convert linker libraries list to link flags
   foreach(lib ${__libs})
     if(TARGET ${lib})
@@ -346,16 +359,18 @@ function(caffe_parse_linker_libs Caffe_LINKER_LIBS_variable folders_var flags_va
     elseif(lib MATCHES "^-l.*")
       list(APPEND libflags ${lib})
     elseif(IS_ABSOLUTE ${lib})
-      get_filename_component(name_we ${lib} NAME_WE)
       get_filename_component(folder  ${lib} PATH)
+      get_filename_component(filename ${lib} NAME)
+      string(REGEX REPLACE "\\.[^.]*$" "" filename_without_shortest_ext ${filename})
 
-      string(REGEX MATCH "^lib(.*)" __match ${name_we})
+      string(REGEX MATCH "^lib(.*)" __match ${filename_without_shortest_ext})
       list(APPEND libflags -l${CMAKE_MATCH_1})
       list(APPEND folders    ${folder})
     else()
       message(FATAL_ERROR "Logic error. Need to update cmake script")
     endif()
   endforeach()
+  list(APPEND libflags -lmwgpu)
 
   caffe_list_unique(libflags folders)
 

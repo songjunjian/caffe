@@ -836,7 +836,7 @@ TYPED_TEST(CuDNNNeuronLayerTest, TestTanHGradientCuDNN) {
   GradientChecker<TypeParam> checker(1e-2, 1e-3);
   checker.CheckGradientEltwise(&layer, this->blob_bottom_vec_,
       this->blob_top_vec_);
-}
+} 
 #endif
 
 }  // namespace caffe
