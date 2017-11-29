@@ -299,7 +299,7 @@ function(caffe_get_current_cflags cflags_var)
   endforeach()
   
 # append the following directory to include
-  list(APPEND cflags "-I/home/junjian/project/faster_rcnn/external/caffe/include;")
+  list(APPEND cflags "-I/home/junjian/project/faster_rcnn_rev/external/caffe/include;")
   list(APPEND cflags "-I/opt/boost/boost_1_65/include;")
   list(APPEND cflags "-I/usr/include/hdf5/serial;")
   list(APPEND cflags "-I/usr/local/cuda/include;")

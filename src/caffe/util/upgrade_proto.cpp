@@ -62,24 +62,24 @@ bool UpgradeNetAsNeeded(const string& param_file, NetParameter* param) {
                 << "V1LayerParameter";
     }
   }
-  // NetParameter uses old style input fields; try to upgrade it.
-  if (NetNeedsInputUpgrade(*param)) {
-    LOG(INFO) << "Attempting to upgrade input file specified using deprecated "
-              << "input fields: " << param_file;
-    UpgradeNetInput(param);
-    LOG(INFO) << "Successfully upgraded file specified using deprecated "
-              << "input fields.";
-    LOG(WARNING) << "Note that future Caffe releases will only support "
-                 << "input layers and not input fields.";
-  }
-  // NetParameter uses old style batch norm layers; try to upgrade it.
-  if (NetNeedsBatchNormUpgrade(*param)) {
-    LOG(INFO) << "Attempting to upgrade batch norm layers using deprecated "
-              << "params: " << param_file;
-    UpgradeNetBatchNorm(param);
-    LOG(INFO) << "Successfully upgraded batch norm layers using deprecated "
-              << "params.";
-  }
+  // // NetParameter uses old style input fields; try to upgrade it.
+  // if (NetNeedsInputUpgrade(*param)) {
+  //   LOG(INFO) << "Attempting to upgrade input file specified using deprecated "
+  //             << "input fields: " << param_file;
+  //   UpgradeNetInput(param);
+  //   LOG(INFO) << "Successfully upgraded file specified using deprecated "
+  //             << "input fields.";
+  //   LOG(WARNING) << "Note that future Caffe releases will only support "
+  //                << "input layers and not input fields.";
+  // }
+  // // NetParameter uses old style batch norm layers; try to upgrade it.
+  // if (NetNeedsBatchNormUpgrade(*param)) {
+  //   LOG(INFO) << "Attempting to upgrade batch norm layers using deprecated "
+  //             << "params: " << param_file;
+  //   UpgradeNetBatchNorm(param);
+  //   LOG(INFO) << "Successfully upgraded batch norm layers using deprecated "
+  //             << "params.";
+  // }
   return success;
 }
 

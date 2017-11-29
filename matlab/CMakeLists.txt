@@ -47,8 +47,9 @@ if(build_using MATCHES "Matlab")
   set(libflags -lcaffe${Caffe_POSTFIX} ${libflags}) # Matlab R2014a complans for -Wl,--whole-archive
 
   caffe_fetch_and_set_proper_mexext(Matlab_caffe_mex)
+  message(STATUS "${Matlab_mex} -g -output  ${Matlab_caffe_mex} ${Matlab_srcs} ${cflags} ${link_folders} ${libflags}")
   add_custom_command(OUTPUT ${Matlab_caffe_mex} COMMAND ${Matlab_mex}
-      ARGS -output ${Matlab_caffe_mex} ${Matlab_srcs} ${cflags} ${link_folders} ${libflags}
+      ARGS -g  -output ${Matlab_caffe_mex} ${Matlab_srcs} ${cflags} ${link_folders} ${libflags}
       DEPENDS caffe COMMENT "Building Matlab interface: ${Matlab_caffe_mex}" VERBATIM)
   add_custom_target(matlab ALL DEPENDS ${Matlab_caffe_mex} SOURCES ${Matlab_srcs})
 

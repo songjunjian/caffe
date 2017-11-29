@@ -90,3 +90,7 @@ LOCK
 LOG*
 CURRENT
 MANIFEST-*
+.vscode/c_cpp_properties.json
+.buildmake_release
+.buildmake_debug
+buildmake
